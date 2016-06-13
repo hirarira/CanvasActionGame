@@ -2,6 +2,8 @@
 const BLOCK_SIZE = 32;
 const WIDTH_SIZE = 640;
 const HEIGHT_SIZE = 480;
+const MAP_WIDTH = 40;
+const MAP_HEIGHT = 15;
 
 class Player{
 	constructor(){
@@ -50,7 +52,7 @@ class Player{
 			for(let j=0;j<3;j++){
 				let in_x = Math.floor(this.x/BLOCK_SIZE) + j - 1;
 				let in_y = Math.floor(this.y/BLOCK_SIZE) + i - 1;
-				if(in_x >= 0 && in_x < (WIDTH_SIZE/BLOCK_SIZE) && in_y >= 0 && in_y < (HEIGHT_SIZE/BLOCK_SIZE) ){
+				if(in_x >= 0 && in_x < (MAP_WIDTH) && in_y >= 0 && in_y < (HEIGHT_SIZE/BLOCK_SIZE) ){
 					if(Map[in_y][in_x] != 0){
 						if(this.x < ( (in_x+1)*BLOCK_SIZE) && this.x > ( (in_x-1)*BLOCK_SIZE - 4) &&
 							this.y < ((in_y+1)*BLOCK_SIZE) && this.y > ((in_y-1)*BLOCK_SIZE) ){
@@ -68,7 +70,7 @@ class Player{
 			for(let j=0;j<3;j++){
 				let in_x = Math.floor(this.x/BLOCK_SIZE) + j - 1;
 				let in_y = Math.floor(this.y/BLOCK_SIZE) + i - 1;
-				if(in_x >= 0 && in_x < (WIDTH_SIZE/BLOCK_SIZE) && in_y >= 0 && in_y < (HEIGHT_SIZE/BLOCK_SIZE) ){
+				if(in_x >= 0 && in_x < (MAP_WIDTH) && in_y >= 0 && in_y < (HEIGHT_SIZE/BLOCK_SIZE) ){
 					if(Map[in_y][in_x] != 0){
 						if(this.x < ( (in_x+1)*BLOCK_SIZE + 4) && this.x > ( (in_x-1)*BLOCK_SIZE) &&
 							this.y < ((in_y+1)*BLOCK_SIZE) && this.y > ((in_y-1)*BLOCK_SIZE) ){
@@ -85,7 +87,7 @@ class Player{
 			for(let j=0;j<3;j++){
 				let in_x = Math.floor(this.x/BLOCK_SIZE) + j - 1;
 				let in_y = Math.floor(this.y/BLOCK_SIZE) + i - 1;
-				if(in_x >= 0 && in_x < (WIDTH_SIZE/BLOCK_SIZE) && in_y >= 0 && in_y < (HEIGHT_SIZE/BLOCK_SIZE) ){
+				if(in_x >= 0 && in_x < (MAP_WIDTH) && in_y >= 0 && in_y < (HEIGHT_SIZE/BLOCK_SIZE) ){
 					if(Map[in_y][in_x] != 0){
 						if(this.x < ( (in_x+1)*BLOCK_SIZE) && this.x > ( (in_x-1)*BLOCK_SIZE) &&
 							this.y < ((in_y+1)*BLOCK_SIZE) && this.y > ((in_y-1)*BLOCK_SIZE) ){
@@ -121,13 +123,13 @@ class Player{
 		if(this.y > HEIGHT_SIZE + BLOCK_SIZE){
 			this.restart();
 		}
-		if(this.x<0||this.x>WIDTH_SIZE-BLOCK_SIZE){
+		if(this.x<0||this.x>(MAP_WIDTH-1)*BLOCK_SIZE){
 			this.vx = 0;
 			if(this.x<0){
 				this.x = 0;
 			}
 			else{
-				this.x = WIDTH_SIZE-BLOCK_SIZE;
+				this.x = (MAP_WIDTH-1)*BLOCK_SIZE;
 			}
 		}
 	}
@@ -160,7 +162,7 @@ class GameObject{
 		this.frame = 0;
 		// マップデータ呼び出し
 		let XHR = new XMLHttpRequest();
-		XHR.open("get","./Map/map.json",false);
+		XHR.open("get","./Map/map2.json",false);
 		XHR.send(null);
 		if(XHR.status == 200){
 			this.Map = JSON.parse(XHR.responseText);
@@ -198,12 +200,14 @@ class GameObject{
 			this.player.muki = (this.player.vx > 0)?BLOCK_SIZE*2:BLOCK_SIZE;
 		}
 		this.ctx.drawImage(this.img.player,(Math.floor(this.frame/10)%3)*BLOCK_SIZE,this.player.muki,BLOCK_SIZE,BLOCK_SIZE,
-			this.player.x,this.player.y,BLOCK_SIZE,BLOCK_SIZE);
+			(WIDTH_SIZE)/2-BLOCK_SIZE,this.player.y,BLOCK_SIZE,BLOCK_SIZE);
 		// Map描画
-		for(let i=0;i<HEIGHT_SIZE/BLOCK_SIZE;i++){
-			for(let j=0;j<WIDTH_SIZE/BLOCK_SIZE;j++){
-				if(this.Map[i][j] != 0){
-					this.img.drawA4(this.ctx,10,4,j * BLOCK_SIZE,i * BLOCK_SIZE);
+		for(let i=0;i<MAP_HEIGHT;i++){
+			for(let j=Math.floor(this.player.x/BLOCK_SIZE)-9;j<Math.floor(this.player.x/BLOCK_SIZE)+12;j++){
+				if(j>=0 && j<MAP_WIDTH){
+					if(this.Map[i][j] != 0){
+						this.img.drawA4(this.ctx,10,4,j * BLOCK_SIZE - this.player.x + 288 ,i * BLOCK_SIZE);
+					}
 				}
 			}
 		}
@@ -237,7 +241,7 @@ window.onload = function(){
 			Game.mainLoop();
 		},16);
 		window.addEventListener("keyup",function(evt){
-			Game.delButton(evt.keyCode)
+			Game.delButton(evt.keyCode);
 		}, true);
 		window.addEventListener("keydown",function(evt){
 			Game.addButton(evt.keyCode);
