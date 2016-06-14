@@ -7,8 +7,8 @@ const MAP_HEIGHT = 15;
 
 class Player{
 	constructor(){
-		this.x = 100;
-		this.y = HEIGHT_SIZE - BLOCK_SIZE*2;
+		this.x = 64;
+		this.y = HEIGHT_SIZE - BLOCK_SIZE*4;
 		this.vx = 0;
 		this.vy = 0;
 		this.muki = BLOCK_SIZE*2;
@@ -17,8 +17,8 @@ class Player{
 		this.kabel = false;
 	}
 	restart(){
-		this.x = 100;
-		this.y = HEIGHT_SIZE - BLOCK_SIZE*2;
+		this.x = 64;
+		this.y = HEIGHT_SIZE - BLOCK_SIZE*4;
 		this.vx = 0;
 		this.vy = 0;
 		this.muki = BLOCK_SIZE*2;
@@ -206,7 +206,9 @@ class GameObject{
 			for(let j=Math.floor(this.player.x/BLOCK_SIZE)-9;j<Math.floor(this.player.x/BLOCK_SIZE)+12;j++){
 				if(j>=0 && j<MAP_WIDTH){
 					if(this.Map[i][j] != 0){
-						this.img.drawA4(this.ctx,10,4,j * BLOCK_SIZE - this.player.x + 288 ,i * BLOCK_SIZE);
+						let nowx = (this.Map[i][j] - 100)%12;
+						let nowy = Math.floor((this.Map[i][j] - 100)/12);
+						this.img.drawA4(this.ctx,nowx,nowy,j * BLOCK_SIZE - this.player.x + 288 ,i * BLOCK_SIZE);
 					}
 				}
 			}

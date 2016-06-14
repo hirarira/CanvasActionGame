@@ -3,18 +3,29 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>Mapmake</title>
-		<link rel="stylesheet" type="text/css" href="../layout.css">
+		<link rel="stylesheet" type="text/css" href="./layout.css">
 		<script type = "text/javascript" src="mapmake.js"></script>
 	</head>
 	<body>
 		<div class="body_right">
 			<H2>MapMake</H2>
+			<table border=0 >
+			<tr><td>
 			<canvas id="img_list" width="384" height="768">
 				canvas機能を使用するためにはHTML5に対応したブラウザが必要になります。
 			</canvas>
+			</td><td>
+			<canvas id="now_img" width="32" height="32">
+				canvas機能を使用するためにはHTML5に対応したブラウザが必要になります。
+			</canvas>
+			</td><td>
+			<div id="now_select">
+			</div>
 			<canvas id="game_main" width="640" height="480">
 				canvas機能を使用するためにはHTML5に対応したブラウザが必要になります。
 			</canvas>
+			</td></tr>
+			</table>
 			<table border=1 class="ts">
 				<tr>
 					<td colspan=2>操作説明</td>

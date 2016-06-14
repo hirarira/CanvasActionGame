@@ -1,0 +1,14 @@
+body{
+	background-color: #B0E0E6;
+}
+.space{
+	clear : left;
+}
+.body_right{
+	float : left;
+	background-image: url("../img/back.png");
+}
+table.ts{
+	text-align : center;
+	margin: 0 auto;
+}
