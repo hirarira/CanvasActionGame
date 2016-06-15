@@ -103,10 +103,8 @@ class GameObject{
 		let nowX = Math.floor((this.click_x - gmo.left)/32);
 		let nowY = Math.floor((this.click_y - gmo.top)/32);
 		// console.log("X:"+nowX+" Y:"+nowY+" NOW:"+this.nowSelectImgNo);
-		if(nowX >= 0 && nowX < 20){
-			if(nowY >= 0 && nowY < 15){
-				this.Map[nowY][nowX] = this.nowSelectImgNo;
-			}
+		if(nowX >= 0 && nowX < 20 && nowY >= 0 && nowY < 15){
+			this.Map[nowY][(nowX+this.scrollX)] = this.nowSelectImgNo;
 		}
 	}
 	SaveMap(){
@@ -130,6 +128,16 @@ class GameObject{
 		}
 	}
 	moveMap(){
+		for(let nkey in this.OnButton ){
+			if(this.OnButton[nkey] == 37){
+				this.scrollX--;
+				return;
+			}
+			else if(this.OnButton[nkey] == 39){
+				this.scrollX++;
+				return;
+			}
+		}
 		
 	}
 	draw(){
@@ -151,10 +159,11 @@ class GameObject{
 		// Map描画
 		for(let i=0;i<MAP_HEIGHT;i++){
 			for(let j=0;j<20;j++){
-				if(j>=0 && j<MAP_WIDTH){
-					if(this.Map[i][j] != 0){
-						let nowx = (this.Map[i][j] - 100)%12;
-						let nowy = Math.floor((this.Map[i][j] - 100)/12);
+				let snowX = this.scrollX + j;
+				if(snowX>=0 && snowX<WIDTH_SIZE){
+					if(this.Map[i][snowX] != 0){
+						let nowx = (this.Map[i][snowX] - 100)%12;
+						let nowy = Math.floor((this.Map[i][snowX] - 100)/12);
 						this.img.drawA4(this.ctx,nowx,nowy,j * BLOCK_SIZE ,i * BLOCK_SIZE);
 					}
 				}
@@ -163,7 +172,9 @@ class GameObject{
 	}
 	mainLoop(){
 		this.SelectImg();
-		this.SetImg();
+		if(this.doClick === true){
+			this.SetImg();
+		}
 		this.moveMap();
 		// 描画
 		this.draw();
