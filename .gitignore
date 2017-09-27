@@ -1,0 +1,5 @@
+# 画像ファイルを除外
+client/img
+
+# node_modulesを除外
+node_modules/

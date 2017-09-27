@@ -4,7 +4,10 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>Game</title>
 		<link rel="stylesheet" type="text/css" href="layout.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 		<script type = "text/javascript" src="game.js"></script>
+		
 	</head>
 	<body>
 		<div class="body_right">
@@ -29,7 +32,10 @@
 					<td>自機を止める</td>
 				</tr>
 			</table>
-			<a href="./mapmake/">Mapエディットはこちら</a><br>
+			<hr>
+			<h3>・名前入力</h3>
+			名前：<input type="text" class="form-control" id="nameForm" value="名無しさん"><br>
+			メッセージ：<input type="text" class="form-control" id="messageForm"><br>		
 		</div>
 	</body>
 </html>
