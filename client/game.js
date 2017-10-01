@@ -6,9 +6,12 @@
 	const MAP_WIDTH = 40;
 	const MAP_HEIGHT = 15;
 	
+	// 読み込み間隔
+	const READ_SECOND = 500;
+	
 	// socket.io
 	let socket = io.connect();
-	
+	let Game;
 	class Player{
 		constructor(){
 			this.x = 64;
@@ -164,6 +167,12 @@
 			this.ctx = this.canvas.getContext('2d');
 			this.gameloop = 10;
 			this.frame = 0;
+			// 他のプレイヤー
+			this.otherPlayer = {};
+			// 読み込みごとに更新するframe
+			let ReadCount = 0;
+			// 自分のID
+			this.socketID = "";
 			// マップデータ呼び出し
 			let XHR = new XMLHttpRequest();
 			XHR.open("get","./Map/map2.json",false);
@@ -190,6 +199,13 @@
 				}
 			}
 		}
+		drawPlayer(setX, setY, muki){
+			this.ctx.drawImage(this.img.player,(Math.floor(this.frame/10)%3)*BLOCK_SIZE,muki,BLOCK_SIZE,BLOCK_SIZE,
+				(WIDTH_SIZE)/2-BLOCK_SIZE,setY+(BLOCK_SIZE/2),BLOCK_SIZE,BLOCK_SIZE);
+		}
+		drawOtherPlayer(setX, setY, muki){
+			
+		}
 		draw(){
 			/* 背景グラデーション */
 			this.ctx.beginPath();
@@ -199,12 +215,7 @@
 			this.ctx.fillStyle = grad;
 			this.ctx.rect(0,0,640,480);
 			this.ctx.fill();
-			// Player
-			if(this.player.vx != 0){
-				this.player.muki = (this.player.vx > 0)?BLOCK_SIZE*2:BLOCK_SIZE;
-			}
-			this.ctx.drawImage(this.img.player,(Math.floor(this.frame/10)%3)*BLOCK_SIZE,this.player.muki,BLOCK_SIZE,BLOCK_SIZE,
-				(WIDTH_SIZE)/2-BLOCK_SIZE,this.player.y,BLOCK_SIZE,BLOCK_SIZE);
+			
 			// Map描画
 			for(let i=0;i<MAP_HEIGHT;i++){
 				for(let j=Math.floor(this.player.x/BLOCK_SIZE)-9;j<Math.floor(this.player.x/BLOCK_SIZE)+12;j++){
@@ -215,6 +226,37 @@
 							this.img.drawA4(this.ctx,nowx,nowy,j * BLOCK_SIZE - this.player.x + 288 ,i * BLOCK_SIZE);
 						}
 					}
+				}
+			}
+			// Player
+			if(this.player.vx != 0){
+				this.player.muki = (this.player.vx > 0)?BLOCK_SIZE*2:BLOCK_SIZE;
+			}
+			this.drawPlayer(this.player.x, this.player.y, this.player.muki);
+			// 他プレイヤー描画
+			for(let i in this.otherPlayer){
+				// 自プレイヤーかどうか判定
+				if(i !== this.socketID){
+					// 他プレイヤーの位置は1000msごとに読みこむが
+					// 20msごとに前回読み込んだ際の位置から軌跡を描画する。
+					let show_x = Math.floor((this.otherPlayer[i].x - this.otherPlayer[i].bx)*this.ReadCount/(READ_SECOND/20));
+					let show_y = Math.floor((this.otherPlayer[i].y - this.otherPlayer[i].by)*this.ReadCount/(READ_SECOND/20));
+					let draw_x = this.otherPlayer[i].bx - this.player.x + 288 + show_x;
+					// ちょっと沈ませて描画
+					let draw_y = Number(this.otherPlayer[i].by) + show_y + (BLOCK_SIZE/2);
+					this.ctx.drawImage(this.img.player,(Math.floor(this.frame/10)%3)*BLOCK_SIZE,this.otherPlayer[i].muki,BLOCK_SIZE,BLOCK_SIZE,
+						draw_x,draw_y,BLOCK_SIZE,BLOCK_SIZE);
+					// 名前表示
+					this.ctx.fillStyle = "red";
+					this.ctx.fillText(this.otherPlayer[i].name,draw_x,draw_y-10);
+					// メッセージ表示
+					this.ctx.beginPath();
+					let str_length = this.otherPlayer[i].message.length * 10 + 20;
+					this.ctx.fillStyle = "white";
+					this.ctx.fillRect(draw_x-10,draw_y-55,str_length,20);
+					this.ctx.strokeRect(draw_x-10,draw_y-55,str_length,20);
+					this.ctx.fillStyle = "black";
+					this.ctx.fillText(this.otherPlayer[i].message,draw_x,draw_y-40);
 				}
 			}
 		}
@@ -233,19 +275,62 @@
 			this.draw();
 			// フレームカウント増大
 			this.frame++
+			this.ReadCount++
+			/*
 			if(this.frame%32 == 0){
 				console.log(this.OnButton);
 				console.log("X:"+this.player.x+"  Y:"+this.player.y);
 			}
+			*/
+		}
+		// 他プレイヤーの処理
+		setOtherPlayer(data){
+			this.otherPlayer = data;
 		}
 	}
+	
+	// Serverからのデータ受信
+	socket.on("serverToClient",(data)=>{
+		if(Game !== undefined){
+			Game.setOtherPlayer(JSON.parse(data.playerList ) );
+			Game.ReadCount = 0;
+		}
+	});
+	// 自分のsocketIDを取得
+	socket.on("sendMyUserID",(data)=>{
+		console.log(data);
+		if(Game !== undefined){
+			Game.socketID = data.myID;
+			console.log(Game.socketID);
+		}
+	});
+	// Serverにデータを送信
+	function sendServer(Game){
+		let playerName = $("#nameForm").val();
+		let playerMessage = $("#messageForm").val();
+		socket.emit("clientToServer", {
+			Player : Game.player,
+			playerName : playerName,
+			playerMessage : playerMessage
+		});
+	}
 	window.addEventListener("load",(eve)=>{
-		let Game = new GameObject();
+		Game = new GameObject();
 		// ブラウザが対応しているか判定
 		if (!Game.err && Game.canvas.getContext){
+			// 自分のユーザIDを取得要請
+			socket.emit("requestMyUserID", {
+			});
+			// 16msごとにループ
+			// 62.5fps
 			let gameloop = setInterval(function(){
 				Game.mainLoop();
 			},16);
+			// 500msごとにサーバにデータを送る
+			let sendServerResult = setInterval(function(){
+				sendServer(Game);
+			},READ_SECOND);
+			
 			window.addEventListener("keyup",function(evt){
 				Game.delButton(evt.keyCode);
 			}, true);
