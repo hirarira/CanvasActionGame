@@ -7,7 +7,7 @@
 	const MAP_HEIGHT = 15;
 	
 	// 読み込み間隔
-	const READ_SECOND = 500;
+	const READ_SECOND = 100;
 	
 	// socket.io
 	let socket = io.connect();

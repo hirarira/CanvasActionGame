@@ -46,7 +46,7 @@
 			playerList[socket.id].setPosition(data.Player.x, data.Player.y, data.Player.muki);
 			playerList[socket.id].setName(data.playerName);
 			playerList[socket.id].setMessage(data.playerMessage);
-			let sendPlayerList = JSON.stringify(playerList)
+			let sendPlayerList = JSON.stringify(playerList);
 			// クライアントに向けて送信
 			io.sockets.to(socket.id).emit('serverToClient',{
 				playerList : sendPlayerList
@@ -63,6 +63,20 @@
 			console.log("ID:"+socket.id+"ログアウトしました");
 			console.log(data);
 			delete playerList[socket.id];
-		})
+		});
+		// クライアントからマップのSAVE要請
+		socket.on('saveMapJSON', function(data) {
+			let outputData = JSON.stringify(data.mapData);
+			fs.writeFile("./client/Map/map2.json",outputData, (err)=>{
+				console.log(err);
+			});
+			/*
+			// クライアントに自分のIDを通達
+			io.sockets.to(socket.id).emit('resSaveRes',{
+				result : "OK"
+			});
+			*/
+			
+		});
     });
 })();
