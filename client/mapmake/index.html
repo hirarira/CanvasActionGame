@@ -13,11 +13,19 @@
 			<H2>MapMake</H2>
 			<table border=1 >
 			<tr>
-				<td rowspan=2>
+				<td rowspan=3>
 					<canvas id="img_list" width="384" height="768">
 						canvas機能を使用するためにはHTML5に対応したブラウザが必要になります。
 					</canvas>
 				</td>
+				<td>
+					<p>パーツ選択画面：右クリック：パーツ選択</p>
+					<p>マップエディット画面：右クリック：パーツ配置</p>
+					<p>マップエディット画面：中クリック：パーツ選択</p>
+					
+				</td>
+			</tr>
+			<tr>
 				<td>
 					現在選択中：
 					<canvas id="now_img" width="32" height="32">
@@ -28,6 +36,9 @@
 					</div>
 					<button id="clearMode">消去モード</button>
 					<button id="saveMap">マップ保存</button>
+					<div id="fsRes">
+						ここに結果が表示されます
+					</div>
 				</td>
 			</tr>
 			<tr>

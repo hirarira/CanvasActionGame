@@ -76,18 +76,38 @@
 				}
 			}
 		}
+		// マウスを押した時に呼ばれる
 		ClickCk(evt){
+			this.click_x = evt.clientX;
+			this.click_y = evt.clientY;
 			if(evt.button == 0){
 				this.doClick = true;
-				this.click_x = evt.clientX;
-				this.click_y = evt.clientY;
 			}
-			else if(evt.button == 1){
-				this.nowSelectImgNo = 0;
+			else{
+				this.doClick = false;
+			}
+			if(evt.button == 1){
+				let gmo = this.canvas.getBoundingClientRect();
+				let nowX = Math.floor((this.click_x - gmo.left)/32);
+				let nowY = Math.floor((this.click_y - gmo.top)/32);
+				console.log(nowX);
+				console.log(nowY);
+				
+				if(nowX >= 0 && nowX < 20 && nowY >= 0 && nowY < 15){
+					this.nowSelectImgNo = this.Map[nowY][(nowX+this.scrollX)];
+					if(this.nowSelectImgNo !== 0){
+						this.SImgX = Math.floor((this.nowSelectImgNo-100)%12);
+						this.SImgY = Math.floor((this.nowSelectImgNo-100)/12);
+					}
+				}
+				else{
+					this.nowSelectImgNo = 0;
+				}
 			}
 		}
+		// マウスを上げた時によばれる
 		MouseUpCk(evt){
-			if(evt.button == 0){
+			if(evt.button === 0){
 				this.doClick = false;
 			}
 		}
@@ -106,15 +126,12 @@
 				this.SImgY = Math.floor(nowY/32);
 				this.nowSelectImgNo = 100 + this.SImgX + (this.SImgY * 12);
 			}
-			$(document).on("click","#clearMode",() => {
-				this.nowSelectImgNo = 0;
-			});
+			
 		}
 		SetImg(){
 			let gmo = this.canvas.getBoundingClientRect();
 			let nowX = Math.floor((this.click_x - gmo.left)/32);
 			let nowY = Math.floor((this.click_y - gmo.top)/32);
-			// console.log("X:"+nowX+" Y:"+nowY+" NOW:"+this.nowSelectImgNo);
 			if(nowX >= 0 && nowX < 20 && nowY >= 0 && nowY < 15){
 				this.Map[nowY][(nowX+this.scrollX)] = this.nowSelectImgNo;
 			}
@@ -173,8 +190,8 @@
 			}
 		}
 		mainLoop(){
-			this.SelectImg();
 			if(this.doClick === true){
+				this.SelectImg();
 				this.SetImg();
 			}
 			this.moveMap();
@@ -215,9 +232,26 @@
 			Game.ctx.fillText("マップデータが読み込めません",100,HEIGHT_SIZE/2);
 		}
 		$(document).on("click","#saveMap",() => {
+			$('#fsRes').empty();
+			$('#fsRes').append("セーブ中・・・");
 			socket.emit("saveMapJSON", {
 				mapData : Game.Map
 			});
 		});
+		$(document).on("click","#clearMode",() => {
+			Game.nowSelectImgNo = 0;
+		});
 	}
+	// Serverからのデータ受信
+	socket.on("resSaveRes",(data)=>{
+		if(data !== null){
+			$('#fsRes').empty();
+			$('#fsRes').append("正常にセーブが完了しました。");
+		}
+		else{
+			$('#fsRes').empty();
+			$('#fsRes').append("異常が発生しました。<br>");
+			$('#fsRes').append(data);
+		}
+	});
 })();

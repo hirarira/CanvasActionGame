@@ -39,21 +39,28 @@
     io.on('connection', function(socket) {
 		console.log("ID:"+socket.id+"がログインしました。");
 		let nowPlayer = new Player();
-		playerList[socket.id] = nowPlayer;
+		
 	    // クライアントからの情報取得
 	    socket.on('clientToServer', function(data) {
-			// プレイヤー情報の格納
-			playerList[socket.id].setPosition(data.Player.x, data.Player.y, data.Player.muki);
-			playerList[socket.id].setName(data.playerName);
-			playerList[socket.id].setMessage(data.playerMessage);
-			let sendPlayerList = JSON.stringify(playerList);
-			// クライアントに向けて送信
-			io.sockets.to(socket.id).emit('serverToClient',{
-				playerList : sendPlayerList
-			});
+			if(typeof playerList[socket.id] === "undefined"){
+				playerList[socket.id] = nowPlayer;
+			}
+			else{
+				// プレイヤー情報の格納
+				playerList[socket.id].setPosition(data.Player.x, data.Player.y, data.Player.muki);
+				playerList[socket.id].setName(data.playerName);
+				playerList[socket.id].setMessage(data.playerMessage);
+				let sendPlayerList = JSON.stringify(playerList);
+				// クライアントに向けて送信
+				io.sockets.to(socket.id).emit('serverToClient',{
+					playerList : sendPlayerList
+				});
+			}
 		});
 		// クライアントから自分のIDをリクエスト
 		socket.on('requestMyUserID', function(data) {
+			// このタイミングでプレイヤーリストに登録する
+			playerList[socket.id] = nowPlayer;
 			// クライアントに自分のIDを通達
 			io.sockets.to(socket.id).emit('sendMyUserID',{
 				myID : socket.id
@@ -69,14 +76,10 @@
 			let outputData = JSON.stringify(data.mapData);
 			fs.writeFile("./client/Map/map2.json",outputData, (err)=>{
 				console.log(err);
+				io.sockets.to(socket.id).emit('resSaveRes',{
+					result : err
+				});
 			});
-			/*
-			// クライアントに自分のIDを通達
-			io.sockets.to(socket.id).emit('resSaveRes',{
-				result : "OK"
-			});
-			*/
-			
 		});
     });
 })();
