@@ -19,10 +19,6 @@
 		constructor(){
 			this.wwaImg = new Image();
 			this.wwaImg.src = "../openImg/island02.gif";
-			this.TileA4 = new Image();
-			this.TileA4.src = "../img/TileA4.png"
-			this.TileA5 = new Image();
-			this.TileA5.src = "../img/TileA5.png"
 		}
 		drawImg(img,ctx,im_x,im_y,x,y){
 			ctx.drawImage(img, im_x*BLOCK_SIZE, im_y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE,

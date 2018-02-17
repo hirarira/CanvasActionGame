@@ -2,7 +2,7 @@ body{
 	background-color: #B0E0E6;
 }
 .title{
-	width : 640px;
+	width : 800px;
 	float : left;
 	border : ridge 4px ;
 }
@@ -10,7 +10,7 @@ body{
 	clear : left;
 }
 .body_right{
-	width : 640px;
+	width : 800px;
 	float : left;
 	// border : ridge 2px ;
 	background-image: url("./openImg/back.png");

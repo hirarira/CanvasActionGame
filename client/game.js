@@ -1,10 +1,18 @@
 (()=>{
 	"use strict"
 	const BLOCK_SIZE = 40;
-	const WIDTH_SIZE = BLOCK_SIZE * 20;
-	const HEIGHT_SIZE = BLOCK_SIZE * 15;
+	const WINDOW_WIDTH = 20;
+	const WINDOW_HEIGHT = 15;
+	
+	const WIDTH_SIZE = BLOCK_SIZE * WINDOW_WIDTH;
+	const HEIGHT_SIZE = BLOCK_SIZE * WINDOW_HEIGHT;
+	
+
 	const MAP_WIDTH = 40;
 	const MAP_HEIGHT = 15;
+	
+	const IMG_WIDTH = 10;
+	const IMG_HEIGHT = 18;
 	
 	// 読み込み間隔
 	const READ_SECOND = 100;
@@ -18,7 +26,7 @@
 			this.y = HEIGHT_SIZE - BLOCK_SIZE*4;
 			this.vx = 0;
 			this.vy = 0;
-			this.muki = BLOCK_SIZE*2;
+			this.muki = 0;
 			this.jump = false;
 			this.kaber = false;
 			this.kabel = false;
@@ -28,7 +36,7 @@
 			this.y = HEIGHT_SIZE - BLOCK_SIZE*4;
 			this.vx = 0;
 			this.vy = 0;
-			this.muki = BLOCK_SIZE*2;
+			this.muki = 0;
 		}
 		keyCheck(OnButton){
 			this.vx = 0;
@@ -145,14 +153,10 @@
 		constructor(){
 			this.wwaImg = new Image();
 			this.wwaImg.src = "./openImg/island02.gif";
-			this.player = new Image();
-			this.player.src = "./img/Actor7.png";
-			this.TileA4 = new Image();
-			this.TileA4.src = "./img/TileA4.png"
 		}
-		drawA4(ctx,im_x,im_y,x,y){
-			ctx.drawImage(this.TileA4,im_x*BLOCK_SIZE,im_y*BLOCK_SIZE,BLOCK_SIZE,BLOCK_SIZE,
-				x,y,BLOCK_SIZE,BLOCK_SIZE);
+		drawImg(img,ctx,im_x,im_y,x,y){
+			ctx.drawImage(img, im_x*BLOCK_SIZE, im_y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE,
+				x, y, BLOCK_SIZE,BLOCK_SIZE);
 		}
 	}
 	class GameObject{
@@ -200,8 +204,9 @@
 			}
 		}
 		drawPlayer(setX, setY, muki){
-			this.ctx.drawImage(this.img.player,(Math.floor(this.frame/10)%3)*BLOCK_SIZE,muki,BLOCK_SIZE,BLOCK_SIZE,
-				(WIDTH_SIZE)/2-BLOCK_SIZE,setY+(BLOCK_SIZE/2),BLOCK_SIZE,BLOCK_SIZE);
+			// 主人公描画
+			this.ctx.drawImage(this.img.wwaImg,((Math.floor(this.frame/10)%2)+6+(muki*2))*BLOCK_SIZE,0,BLOCK_SIZE,BLOCK_SIZE,(WIDTH_SIZE-BLOCK_SIZE)/2,setY+(BLOCK_SIZE/2),BLOCK_SIZE,BLOCK_SIZE);
+			// this.ctx.drawImage(this.img.player,(Math.floor(this.frame/10)%3)*BLOCK_SIZE,muki,BLOCK_SIZE,BLOCK_SIZE,       (WIDTH_SIZE)/2-BLOCK_SIZE,setY+(BLOCK_SIZE/2),BLOCK_SIZE,BLOCK_SIZE);
 		}
 		drawOtherPlayer(setX, setY, muki){
 			
@@ -213,27 +218,27 @@
 			grad.addColorStop(0,'rgb(100,255,255)');
 			grad.addColorStop(1,'rgb(255,255,255)');
 			this.ctx.fillStyle = grad;
-			this.ctx.rect(0,0,640,480);
+			this.ctx.rect(0, 0, WIDTH_SIZE, HEIGHT_SIZE);
 			this.ctx.fill();
 			this.ctx.fillStyle = "rgb(150,100,100)";
 			// Map描画
 			for(let i=0;i<MAP_HEIGHT;i++){
-				for(let j=Math.floor(this.player.x/BLOCK_SIZE)-9;j<Math.floor(this.player.x/BLOCK_SIZE)+12;j++){
+				for(let j=Math.floor(this.player.x/BLOCK_SIZE)-10;j<Math.floor(this.player.x/BLOCK_SIZE)+14;j++){
 					if(j>=0 && j<MAP_WIDTH){
 						if(typeof this.Map[i][j] === "undefined" || this.Map[i][j] === null){
-							this.ctx.fillRect(j*BLOCK_SIZE-this.player.x+288, i*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+							this.ctx.fillRect(j*BLOCK_SIZE-this.player.x+(WIDTH_SIZE-BLOCK_SIZE)/2, i*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
 						}
 						if(this.Map[i][j] !== 0){
-							let nowx = (this.Map[i][j] - 100)%12;
-							let nowy = Math.floor((this.Map[i][j] - 100)/12);
-							this.img.drawA4(this.ctx, nowx, nowy, j*BLOCK_SIZE-this.player.x+288, i*BLOCK_SIZE);
+							let nowx = (this.Map[i][j] - 100)%IMG_WIDTH;
+							let nowy = Math.floor((this.Map[i][j] - 100)/IMG_WIDTH);
+							this.img.drawImg(this.img.wwaImg, this.ctx, nowx, nowy, j*BLOCK_SIZE-this.player.x+(WIDTH_SIZE-BLOCK_SIZE)/2, i*BLOCK_SIZE);
 						}
 					}
 				}
 			}
 			// Player
 			if(this.player.vx != 0){
-				this.player.muki = (this.player.vx > 0)?BLOCK_SIZE*2:BLOCK_SIZE;
+				this.player.muki = (this.player.vx > 0)?1:0;
 			}
 			this.drawPlayer(this.player.x, this.player.y, this.player.muki);
 			// 他プレイヤー描画
@@ -244,11 +249,11 @@
 					// 20msごとに前回読み込んだ際の位置から軌跡を描画する。
 					let show_x = Math.floor((this.otherPlayer[i].x - this.otherPlayer[i].bx)*this.ReadCount/(READ_SECOND/20));
 					let show_y = Math.floor((this.otherPlayer[i].y - this.otherPlayer[i].by)*this.ReadCount/(READ_SECOND/20));
-					let draw_x = this.otherPlayer[i].bx - this.player.x + 288 + show_x;
+					let draw_x = this.otherPlayer[i].bx - this.player.x + (WIDTH_SIZE-BLOCK_SIZE)/2 + show_x;
 					// ちょっと沈ませて描画
 					let draw_y = Number(this.otherPlayer[i].by) + show_y + (BLOCK_SIZE/2);
-					this.ctx.drawImage(this.img.player,(Math.floor(this.frame/10)%3)*BLOCK_SIZE,this.otherPlayer[i].muki,BLOCK_SIZE,BLOCK_SIZE,
-						draw_x,draw_y,BLOCK_SIZE,BLOCK_SIZE);
+					// this.ctx.drawImage(this.img.player,(Math.floor(this.frame/10)%3)*BLOCK_SIZE,this.otherPlayer[i].muki,BLOCK_SIZE,BLOCK_SIZE, draw_x,draw_y,BLOCK_SIZE,BLOCK_SIZE);
+					this.ctx.drawImage(this.img.wwaImg,((Math.floor(this.frame/10)%2)+6+(this.otherPlayer[i].muki*2))*BLOCK_SIZE,0,BLOCK_SIZE,BLOCK_SIZE,draw_x,draw_y,BLOCK_SIZE,BLOCK_SIZE);
 					// 名前表示
 					this.ctx.fillStyle = "red";
 					this.ctx.fillText(this.otherPlayer[i].name,draw_x,draw_y-10);
