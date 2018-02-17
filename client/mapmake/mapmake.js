@@ -1,24 +1,32 @@
 (()=>{
 	"use strict"
-	const BLOCK_SIZE = 32;
-	const WIDTH_SIZE = 640;
-	const HEIGHT_SIZE = 480;
+	const BLOCK_SIZE = 40;
+	const WIDTH_SIZE = BLOCK_SIZE * 20;
+	const HEIGHT_SIZE = BLOCK_SIZE * 15;
+	
+	const WINDOW_WIDTH = 20;
+	const WINDOW_HEIGHT = 15;
 	const MAP_WIDTH = 40;
 	const MAP_HEIGHT = 15;
+	
+	const IMG_WIDTH = 10;
+	const IMG_HEIGHT = 18;
 
 	// socket.io
 	let socket = io.connect();
 
 	class SetImg{
 		constructor(){
+			this.wwaImg = new Image();
+			this.wwaImg.src = "../openImg/island02.gif";
 			this.TileA4 = new Image();
 			this.TileA4.src = "../img/TileA4.png"
 			this.TileA5 = new Image();
 			this.TileA5.src = "../img/TileA5.png"
 		}
-		drawA4(ctx,im_x,im_y,x,y){
-			ctx.drawImage(this.TileA4,im_x*BLOCK_SIZE,im_y*BLOCK_SIZE,BLOCK_SIZE,BLOCK_SIZE,
-				x,y,BLOCK_SIZE,BLOCK_SIZE);
+		drawImg(img,ctx,im_x,im_y,x,y){
+			ctx.drawImage(img, im_x*BLOCK_SIZE, im_y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE,
+				x, y, BLOCK_SIZE,BLOCK_SIZE);
 		}
 	}
 	class GameObject{
@@ -88,16 +96,16 @@
 			}
 			if(evt.button == 1){
 				let gmo = this.canvas.getBoundingClientRect();
-				let nowX = Math.floor((this.click_x - gmo.left)/32);
-				let nowY = Math.floor((this.click_y - gmo.top)/32);
+				let nowX = Math.floor((this.click_x - gmo.left)/BLOCK_SIZE);
+				let nowY = Math.floor((this.click_y - gmo.top)/BLOCK_SIZE);
 				console.log(nowX);
 				console.log(nowY);
 				
-				if(nowX >= 0 && nowX < 20 && nowY >= 0 && nowY < 15){
+				if(nowX >= 0 && nowX < IMG_WIDTH && nowY >= 0 && nowY < IMG_HEIGHT){
 					this.nowSelectImgNo = this.Map[nowY][(nowX+this.scrollX)];
 					if(this.nowSelectImgNo !== 0){
-						this.SImgX = Math.floor((this.nowSelectImgNo-100)%12);
-						this.SImgY = Math.floor((this.nowSelectImgNo-100)/12);
+						this.SImgX = Math.floor((this.nowSelectImgNo-100)%IMG_WIDTH);
+						this.SImgY = Math.floor((this.nowSelectImgNo-100)/IMG_WIDTH);
 					}
 				}
 				else{
@@ -121,18 +129,18 @@
 			let gmo = this.canvasImgL.getBoundingClientRect();
 			let nowX = this.click_x - gmo.left;
 			let nowY = this.click_y - gmo.top;
-			if(nowX >= 0 && nowX < 32 * 12 && nowY >= 0 && nowY < 32 * 24){
-				this.SImgX = Math.floor(nowX/32);
-				this.SImgY = Math.floor(nowY/32);
-				this.nowSelectImgNo = 100 + this.SImgX + (this.SImgY * 12);
+			if(nowX >= 0 && nowX < BLOCK_SIZE * IMG_WIDTH && nowY >= 0 && nowY < BLOCK_SIZE * IMG_HEIGHT){
+				this.SImgX = Math.floor(nowX/BLOCK_SIZE);
+				this.SImgY = Math.floor(nowY/BLOCK_SIZE);
+				this.nowSelectImgNo = 100 + this.SImgX + (this.SImgY * IMG_WIDTH);
 			}
 			
 		}
 		SetImg(){
 			let gmo = this.canvas.getBoundingClientRect();
-			let nowX = Math.floor((this.click_x - gmo.left)/32);
-			let nowY = Math.floor((this.click_y - gmo.top)/32);
-			if(nowX >= 0 && nowX < 20 && nowY >= 0 && nowY < 15){
+			let nowX = Math.floor((this.click_x - gmo.left)/BLOCK_SIZE);
+			let nowY = Math.floor((this.click_y - gmo.top)/BLOCK_SIZE);
+			if(nowX >= 0 && nowX < WINDOW_WIDTH && nowY >= 0 && nowY < WINDOW_HEIGHT){
 				this.Map[nowY][(nowX+this.scrollX)] = this.nowSelectImgNo;
 			}
 		}
@@ -153,11 +161,11 @@
 			/* 画像リスト表示 */
 			// 上画面
 			this.ctxImgL.beginPath();
-			this.ctxImgL.drawImage(this.img.TileA4,0,0);
+			this.ctxImgL.drawImage(this.img.wwaImg,0,0);
 			// 現在選択中のパーツと番号を描画
 			this.ctxns.beginPath();
 			if(this.nowSelectImgNo !== 0){
-				this.img.drawA4(this.ctxns,this.SImgX,this.SImgY,0,0);
+				this.img.drawImg(this.img.wwaImg, this.ctxns,this.SImgX,this.SImgY,0,0);
 			}else{
 				this.ctxns.fillRect(0, 0, BLOCK_SIZE, BLOCK_SIZE);
 			}
@@ -169,17 +177,17 @@
 			grad.addColorStop(0,'rgb(100,255,255)');
 			grad.addColorStop(1,'rgb(255,255,255)');
 			this.ctx.fillStyle = grad;
-			this.ctx.rect(0,0,640,480);
+			this.ctx.rect(0, 0, WIDTH_SIZE, HEIGHT_SIZE);
 			this.ctx.fill();
 			// Map描画
-			for(let i=0;i<MAP_HEIGHT;i++){
-				for(let j=0;j<20;j++){
+			for(let i=0;i<WINDOW_HEIGHT;i++){
+				for(let j=0;j<WINDOW_WIDTH;j++){
 					let snowX = this.scrollX + j;
 					if(snowX>=0 && snowX<WIDTH_SIZE){
 						if(this.Map[i][snowX] != 0){
-							let nowx = (this.Map[i][snowX] - 100)%12;
-							let nowy = Math.floor((this.Map[i][snowX] - 100)/12);
-							this.img.drawA4(this.ctx,nowx,nowy,j * BLOCK_SIZE ,i * BLOCK_SIZE);
+							let nowx = (this.Map[i][snowX] - 100)%IMG_WIDTH;
+							let nowy = Math.floor((this.Map[i][snowX] - 100)/IMG_WIDTH);
+							this.img.drawImg(this.img.wwaImg, this.ctx,nowx,nowy,j * BLOCK_SIZE ,i * BLOCK_SIZE);
 						}
 						// マップの枠描画
 						this.ctx.strokeRect(j * BLOCK_SIZE, i* BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);

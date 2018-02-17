@@ -13,7 +13,7 @@ body{
 	width : 640px;
 	float : left;
 	// border : ridge 2px ;
-	background-image: url("./img/back.png");
+	background-image: url("./openImg/back.png");
 }
 table.ts{
 	text-align : center;

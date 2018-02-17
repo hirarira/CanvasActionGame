@@ -1,8 +1,8 @@
 (()=>{
 	"use strict"
-	const BLOCK_SIZE = 32;
-	const WIDTH_SIZE = 640;
-	const HEIGHT_SIZE = 480;
+	const BLOCK_SIZE = 40;
+	const WIDTH_SIZE = BLOCK_SIZE * 20;
+	const HEIGHT_SIZE = BLOCK_SIZE * 15;
 	const MAP_WIDTH = 40;
 	const MAP_HEIGHT = 15;
 	
@@ -143,12 +143,12 @@
 	}
 	class SetImg{
 		constructor(){
+			this.wwaImg = new Image();
+			this.wwaImg.src = "./openImg/island02.gif";
 			this.player = new Image();
 			this.player.src = "./img/Actor7.png";
 			this.TileA4 = new Image();
 			this.TileA4.src = "./img/TileA4.png"
-			this.TileA5 = new Image();
-			this.TileA5.src = "./img/TileA5.png"
 		}
 		drawA4(ctx,im_x,im_y,x,y){
 			ctx.drawImage(this.TileA4,im_x*BLOCK_SIZE,im_y*BLOCK_SIZE,BLOCK_SIZE,BLOCK_SIZE,

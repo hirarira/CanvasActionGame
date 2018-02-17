@@ -6,7 +6,7 @@ body{
 }
 .body_right{
 	float : left;
-	background-image: url("../img/back.png");
+	background-image: url("../openImg/back.png");
 }
 table.ts{
 	text-align : center;
