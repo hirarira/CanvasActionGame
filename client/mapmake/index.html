@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html lang="ja">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Mapmake</title>
+    <link rel="stylesheet" type="text/css" href="./layout.css">
+    <script type = "text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type = "text/javascript" src="mapmake.js"></script>
+  </head>
+  <body>
+    <div class="body_right">
+      <H2>MapMake</H2>
+      <table border=1 >
+      <tr>
+        <td rowspan=3>
+          <canvas id="img_list" width="400" height="720">
+            canvas機能を使用するためにはHTML5に対応したブラウザが必要になります。
+          </canvas>
+        </td>
+        <td>
+          <p>パーツ選択画面：右クリック：パーツ選択</p>
+          <p>マップエディット画面：右クリック：パーツ配置</p>
+          <p>マップエディット画面：中クリック：パーツ選択</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td>
+          現在選択中：
+          <canvas id="now_img" width="40" height="40">
+            canvas機能を使用するためにはHTML5に対応したブラウザが必要になります。
+          </canvas>
+          <div id="now_select">
+            100
+          </div>
+          <button id="clearMode">消去モード</button>
+          <button id="saveMap">マップ保存</button>
+          <div id="fsRes">
+            ここに結果が表示されます
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <canvas id="game_main" width="800" height="600">
+            canvas機能を使用するためにはHTML5に対応したブラウザが必要になります。
+          </canvas>
+        </td>
+      </tr>
+      </table>
+    </div>
+  </body>
+</html>

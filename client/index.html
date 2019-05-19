@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html lang="ja">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Game</title>
+    <link rel="stylesheet" type="text/css" href="layout.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type = "text/javascript" src="game.js"></script>
+
+  </head>
+  <body>
+    <div class="body_right">
+      <H2>アクションゲーム</H2>
+      <canvas id="game_main" width="800" height="600">
+        canvas機能を使用するためにはHTML5に対応したブラウザが必要になります。
+      </canvas>
+      <table border=1 class="ts">
+        <tr>
+          <td colspan=2>操作説明</td>
+        </tr>
+        <tr>
+          <td>左右キー</td>
+          <td>自機の左右移動</td>
+        </tr>
+        <tr>
+          <td>Aキー</td>
+          <td>ジャンプ</td>
+        </tr>
+        <tr>
+          <td>それ以外</td>
+          <td>自機を止める</td>
+        </tr>
+      </table>
+      <hr>
+      <div id="change">ここが変化します．</div>
+      <h3>・名前入力</h3>
+      <form class="form-inline">
+      名前：<input type="text" class="form-control" id="nameForm" value="名無しさん"><br>
+      メッセージ：<input type="text" class="form-control" id="messageForm"><br>
+      </form>
+      <hr>
+      <a href="./mapmake/">Map制作はこちら</a>
+    </div>
+  </body>
+</html>

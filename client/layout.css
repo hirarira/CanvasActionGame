@@ -1,0 +1,21 @@
+body{
+  background-color: #B0E0E6;
+}
+.title{
+  width : 800px;
+  float : left;
+  border : ridge 4px ;
+}
+.space{
+  clear : left;
+}
+.body_right{
+  width : 800px;
+  float : left;
+  // border : ridge 2px ;
+  background-image: url("./openImg/back.png");
+}
+table.ts{
+  text-align : center;
+  margin: 0 auto;
+}
