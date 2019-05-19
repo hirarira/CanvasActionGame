@@ -1,14 +1,14 @@
 body{
-	background-color: #B0E0E6;
+  background-color: #B0E0E6;
 }
 .space{
-	clear : left;
+  clear : left;
 }
 .body_right{
-	float : left;
-	background-image: url("../openImg/back.png");
+  float : left;
+  background-image: url("../openImg/back.png");
 }
 table.ts{
-	text-align : center;
-	margin: 0 auto;
+  text-align : center;
+  margin: 0 auto;
 }
