@@ -4,5 +4,6 @@ services:
     build: .
     volumes:
       - .:/service/
+      - /service/node_modules
     ports:
      - "3000:3000"
